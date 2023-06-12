@@ -15,7 +15,7 @@
     <bytecodeTargetLevel>
       <module name="awbd" target="17" />
       <module name="config-server" target="17" />
-      <module name="discount" target="17" />
+      <module name="discount" target="11" />
       <module name="wrapper" target="1.5" />
     </bytecodeTargetLevel>
   </component>

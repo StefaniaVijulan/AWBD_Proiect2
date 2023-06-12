@@ -1,14 +1,15 @@
 package com.awbd.awbd.Controller;
 
 
+import com.awbd.awbd.Service.DiscountServiceProxy;
 import com.awbd.awbd.Service.ProductService;
+import com.awbd.awbd.model.Discount;
 import com.awbd.awbd.model.Product;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
@@ -24,6 +25,17 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class ProductController {
     @Autowired
     ProductService productService;
+
+    @Autowired
+    DiscountServiceProxy discountServiceProxy;
+
+    @GetMapping("/product/title/{title}")
+    Product findByTitle(@PathVariable String title){
+        Product product = productService.findByTitle(title);
+        Discount discount = discountServiceProxy.findDiscount();
+        product.setPrice(product.getPrice() - (discount.getValue()*product.getPrice())/100);
+        return product;
+    }
 
 
     @GetMapping(value = "/product/list", produces = {"application/hal+json"})
@@ -41,22 +53,8 @@ public class ProductController {
         return result;
     }
 
-
-    @GetMapping("/product/title/{title}")
-    Product findByTitle(@PathVariable String title){
-        Product product = productService.findByTitle(title);
-
-
-        Link selfLink = linkTo(methodOn(ProductController.class).getProduct(product.getId())).withSelfRel();
-
-        product.add(selfLink);
-
-        return product;
-    }
-
-
     @PostMapping("/product")
-    public ResponseEntity<Product> save(@Valid @RequestBody Product product){
+    public ResponseEntity<Product> save( @RequestBody Product product){
         Product saveProduct = productService.save(product);
         URI locationUri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{productId}").buildAndExpand(saveProduct.getId())
