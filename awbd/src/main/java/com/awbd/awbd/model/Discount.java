@@ -8,6 +8,8 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 public class Discount {
+
     private int value;
     private int period;
+    private String versionId;
 }

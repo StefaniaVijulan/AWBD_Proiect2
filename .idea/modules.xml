@@ -6,6 +6,8 @@
       <module fileurl="file://$PROJECT_DIR$/awbd/awbd.iml" filepath="$PROJECT_DIR$/awbd/awbd.iml" />
       <module fileurl="file://$PROJECT_DIR$/config-server/config-server.iml" filepath="$PROJECT_DIR$/config-server/config-server.iml" />
       <module fileurl="file://$PROJECT_DIR$/discount/discount.iml" filepath="$PROJECT_DIR$/discount/discount.iml" />
+      <module fileurl="file://$PROJECT_DIR$/discount/employee.iml" filepath="$PROJECT_DIR$/discount/employee.iml" />
+      <module fileurl="file://$PROJECT_DIR$/eureka-server/eureka-server.iml" filepath="$PROJECT_DIR$/eureka-server/eureka-server.iml" />
     </modules>
   </component>
 </project>

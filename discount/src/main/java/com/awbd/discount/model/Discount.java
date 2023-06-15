@@ -10,4 +10,5 @@ import lombok.Setter;
 public class Discount {
     private int value;
     private int period;
+    private String versionId;
 }

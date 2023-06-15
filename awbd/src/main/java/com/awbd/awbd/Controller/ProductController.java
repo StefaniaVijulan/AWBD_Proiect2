@@ -5,11 +5,13 @@ import com.awbd.awbd.Service.DiscountServiceProxy;
 import com.awbd.awbd.Service.ProductService;
 import com.awbd.awbd.model.Discount;
 import com.awbd.awbd.model.Product;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
@@ -22,6 +24,7 @@ import java.util.List;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
+@Slf4j
 public class ProductController {
     @Autowired
     ProductService productService;
@@ -33,6 +36,7 @@ public class ProductController {
     Product findByTitle(@PathVariable String title){
         Product product = productService.findByTitle(title);
         Discount discount = discountServiceProxy.findDiscount();
+        log.info(discount.getVersionId());
         product.setPrice(product.getPrice() - (discount.getValue()*product.getPrice())/100);
         return product;
     }
@@ -81,11 +85,19 @@ public class ProductController {
     }
 
     @GetMapping("/product/{productId}")
+    @CircuitBreaker(name="discountById", fallbackMethod = "getProductFallback")
     public Product getProduct(@PathVariable Long productId) {
 
         System.out.println(productId);
         Product product = productService.findById(productId);
+        Discount discount = discountServiceProxy.findDiscount();
+        log.info("Version Discount" + discount.getVersionId());
+        product.setPrice(product.getPrice() - (discount.getValue()*product.getPrice())/100);
         return product;
-
+    }
+    private Product getProductFallback(Long productId, Throwable throwable) {
+        Product product = productService.findById(productId);
+        log.info("Called getProductFallback() method" );
+        return product;
     }
 }
