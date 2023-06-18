@@ -1,0 +1,9 @@
+awbd:
+  ribbon:
+    eureka:
+      enabled: true
+    listOfServers: localhost:8090,localhost:8091,localhost:8092
+    ServerListRefreshInterval: 2000
+
+server:
+  port: 9090
